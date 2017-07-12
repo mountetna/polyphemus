@@ -1,50 +1,38 @@
-class UserAdminController < BasicController
-
+class UserAdminController < Polyphemus::Controller
   def run()
-
     # Check for the correct parameters.
-    raise_err(:BAD_REQ, 0, __method__) if !@params.key?('token')
+    check_param('token')
 
     # Check that the user is an admin (only admins allowed to use this class)
-    @data = { :token=> @params['token'], :app_key=> Secrets::APP_KEY }
-    uri = '/check-admin-token'
-    raise_err(:BAD_REQ, 1, __method__) if !admin_user?(uri, @data)
+    check_admin
 
     # The data being sent back to the client should already be in a JSON format.
     return send(@action)
   end
 
-  def get_users()
-
-    make_request(Secrets::JANUS_ADDR+'/get-users', @data)
+  def get_users
+    janus_request('get-users')
   end
 
-  def get_projects()
-
-    make_request(Secrets::JANUS_ADDR+'/get-projects', @data)
+  def get_projects
+    janus_request('get-projects')
   end
 
-  def get_permissions()
-
-    make_request(Secrets::JANUS_ADDR+'/get-permissions', @data)
+  def get_permissions
+    janus_request('get-permissions')
   end
 
-  def upload_permissions()
-
-    raise_err(:BAD_REQ, 0, m) if !@params.key?('permissions')
-    @data['permissions'] = @params['permissions']
-    make_request(Secrets::JANUS_ADDR+'/upload-permissions', @data)
+  def upload_permissions
+    check_param('permissions')
+    janus_request('upload-permissions', permissions: @params['permissions'])
   end
 
-  def remove_permissions()
-
-    raise_err(:BAD_REQ, 0, m) if !@params.key?('permissions')
-    @data['permissions'] = @params['permissions']
-    make_request(Secrets::JANUS_ADDR+'/remove-permissions', @data)
+  def remove_permissions
+    check_param('permissions')
+    janus_request('remove-permissions', permissions: @params['permissions'])
   end
 
-  def logout_all()
-
-    make_request(Secrets::JANUS_ADDR+'/logout-all', @data)
+  def logout_all
+    janus_request('logout-all')
   end
 end

@@ -14,22 +14,17 @@ class Polyphemus
   end
 
   def call(env)
-
     # Parse the request
     @request = Rack::Request.new(env)
     route = @routes[[@request.request_method, @request.path]]
 
     if route
-
       begin
-
         Rack::Response.new(call_action_for(route))
-      rescue BasicError=> err
-
+      rescue Polyphemus::Error => err
         Rack::Response.new(send_err(err).to_json)
       end
     else
-
       Rack::Response.new('File not found.', 404)
     end
   end
@@ -42,41 +37,23 @@ class Polyphemus
 
   private 
   def call_action_for(route)
-
     controller, action = route.split('#')
     controller_class = Kernel.const_get(controller)
     controller_class.new(@request, action).run()
   end
 
   def send_err(err)
+    ip = @request.env['HTTP_X_FORWARDED_FOR']
+    ref = SecureRandom.hex(4)
+    log_line = "#{ref} - #{e.message}, #{e.method}, #{ip}"
 
-    ip = @request.env['HTTP_X_FORWARDED_FOR'].to_s
-    ref_id = SecureRandom.hex(4).to_s
-    response = { :success=> false, :ref=> ref_id }
-    m = err.method.to_s
-
-    case err.type
-    when :SERVER_ERR
-
-      code = Conf::ERRORS[err.id].to_s
-      @app_logger.error(ref_id+' - '+code+', '+m+', '+ip)
-      response[:error] = 'Server error.'
-    when :BAD_REQ
-
-      code = Conf::WARNS[err.id].to_s
-      @app_logger.warn(ref_id+' - '+code+', '+m+', '+ip)
-      response[:error] = 'Bad request.'
-    when :BAD_LOG
-
-      code = Conf::WARNS[err.id].to_s
-      @app_logger.warn(ref_id+' - '+code+', '+m+', '+ip)
-      response[:error] = 'Invalid login.'
-    else
-
-      @app_logger.error(ref_id+' - UNKNOWN, '+m+', '+ip)
-      response[:error] = 'Unknown error.'
+    case err.level
+    when Logger::WARN
+      @app_logger.warn(log_line)
+    when Logger::ERROR
+      @app_logger.error(log_line)
     end
 
-    return response
+    return { success: false, ref: ref }
   end
 end
