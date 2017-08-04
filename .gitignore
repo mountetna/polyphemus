@@ -18,3 +18,5 @@ package-lock.json
 *.ttf
 *.woff
 *.woff2
+*.swp
+*.swo
