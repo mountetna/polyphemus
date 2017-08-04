@@ -2,17 +2,17 @@ class Polyphemus
   class Error < StandardError
     attr_reader :level
 
-    def initialize
+    def initialize(msg="Polyphemus had an error")
       @level = Logger::WARN
       super
     end
   end
 
-  class BadRequest < Error
+  class BadRequest < Polyphemus::Error
   end
 
-  class ServerError < Error
-    def initialize
+  class ServerError < Polyphemus::Error
+    def initialize(msg="Server error")
       super
       @level = Logger::ERROR
     end

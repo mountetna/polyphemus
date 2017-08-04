@@ -12,7 +12,7 @@ class ClientController
     return send(@action)
   end
 
-  def basic_view()
+  def browse()
     return File.read('./server/views/basic_view.html')
   end
 

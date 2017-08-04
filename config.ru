@@ -1,5 +1,8 @@
 # The packages
-require 'rack'
+require 'bundler'
+
+Bundler.require(:default)
+
 require 'json'
 require 'digest'
 require 'logger'
@@ -14,7 +17,7 @@ require './server/secrets'
 require './server/errors'
 require './server/polyphemus'
 require './server/routes'
-require './server/controllers/basic_controller'
+require './server/controllers/polyphemus_controller'
 require './server/controllers/user_log_controller'
 require './server/controllers/client_controller'
 require './server/controllers/network_utils_controller'
@@ -22,4 +25,4 @@ require './server/controllers/user_admin_controller'
 
 use Rack::Static, urls: ['/css', '/js', '/fonts', '/img'], root: 'client'
 
-run(Polyphemus)
+run Polyphemus.new

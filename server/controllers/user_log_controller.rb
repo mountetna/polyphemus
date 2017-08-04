@@ -1,5 +1,5 @@
 # This controller serves as an intermediary to Janus logging services.
-class UserLogController < BasicController
+class UserLogController < Polyphemus::Controller
 
   def run()
     # Depending on whether we get token or email/pass combo we perform different
@@ -17,7 +17,7 @@ class UserLogController < BasicController
   end
 
   def log_in()
-      check_admin
+      #check_admin
 
       janus_request(
         'login', 
