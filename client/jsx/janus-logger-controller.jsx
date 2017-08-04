@@ -41,7 +41,7 @@ export default class JanusLoggerController{
     }
     else{
 
-      this.notLogged();
+      //this.notLogged();
     }
   }
 

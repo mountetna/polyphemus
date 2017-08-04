@@ -48,10 +48,8 @@ export default class BasicView extends React.Component{
         <div id='left-column-group'>
         </div>
 
-        { /*this.renderContent()*/ }
         <div id='user-info-group'>
-
-          Standby.
+        { this.renderContent() }
         </div>
       </div>
     )

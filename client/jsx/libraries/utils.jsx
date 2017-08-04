@@ -3,7 +3,7 @@
  */
 
 var TOKEN_NAME = 'UCSF_ETNA_AUTH_TOKEN';
-var POLYPHEMUS_ADDR = 'https://polyphemus-dev.ucsf.edu';
+var POLYPHEMUS_ADDR = 'https://polyphemus-dev.ucsf-immunoprofiler.org';
 
 /* 
  * Generates a psudo random key for React components and data element sorting.
@@ -398,12 +398,12 @@ var SNAKE_CASE_IT = function(str){
 // After we log out of Janus we must log out of Shibboleth.
 var LOGGED_OUT_ADDR = function(){
 
-  var base = 'https://janus-dev.ucsf.edu/Shibboleth.sso/Logout';
+  var base = 'https://janus-dev.ucsf-immunoprofiler.org/Shibboleth.sso/Logout';
   return base+'?return=https%3A%2F%2Fpolyphemus-dev.ucsf.edu%2Flogged-out';
 }
 
 var NOT_LOGGED_ADDR = function(){
 
-  var base = 'https://janus-dev.ucsf.edu/login';
+  var base = 'https://janus-dev.ucsf-immunoprofiler.org/login';
   return base+'?refer=https%3A%2F%2Fpolyphemus-dev.ucsf.edu%2F';
 }

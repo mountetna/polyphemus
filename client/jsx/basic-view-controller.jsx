@@ -64,11 +64,11 @@ class BasicViewController{
         break;
       case 'LOGGED_OUT':
 
-        window.location = LOGGED_OUT_ADDR();
+        //window.location = LOGGED_OUT_ADDR();
         break
       case 'NOT_LOGGED':
 
-        window.location = NOT_LOGGED_ADDR();
+        //window.location = NOT_LOGGED_ADDR();
         break;
       default:
 
