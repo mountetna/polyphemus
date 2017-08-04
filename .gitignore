@@ -11,6 +11,8 @@ trash.rb
 /log
 /source
 
+Gemfile.lock
+package-lock.json
 *.eot
 *.svg
 *.ttf
