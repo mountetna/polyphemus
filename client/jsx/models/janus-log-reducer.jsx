@@ -1,100 +1,71 @@
-export default class JanusLogReducer{
-
-  reducer(){
-
-    return (state={}, action)=>{
-
-      switch(action['type']){
-
-        case 'LOG_IN':
-
-          var userInfo = Object.assign({}, state);
-          userInfo['userEmail'] = action['data']['email'];
-          return userInfo;
-
-        case 'LOGGED_IN':
-
-          var userInfo = Object.assign({}, state);
-
-          /* 
-           * Copy the new data from the auth server to the local Redux store.
-           * Also keep an eye on that 'cleanPermissions' function. The client
-           * wants it's vars in camel case.
-           */
-          for(var key in action['data']){
-
-            var userItem = action['data'][key];
-            if(key == 'permissions') userItem = this.cleanPermissions(userItem);
-            userInfo[key] = userItem;
-          }
-
-          userInfo['loginStatus'] = true;
-          userInfo['loginError'] = false;
-          var perms = userInfo['permissions'];
-          userInfo['masterPerms'] = this.checkAdminPermissions(perms);
-          return userInfo;
-
-        case 'LOGGED_OUT':
-
-          var userInfo = Object.assign({}, state);
-
-          // Clear the local data.
-          for(var key in userInfo){
-
-            userInfo[key] = '';
-          }
-
-          userInfo['userId'] = null;
-          userInfo['permissions'] = [];
-          userInfo['masterPerms'] = false;
-          userInfo['loginStatus'] = false;
-          userInfo['logError'] = false;
-          userInfo['loginErrorMsg'] = 'Invalid sign in.';
-          return userInfo;
-        case 'LOG_ERROR':
-
-          var userInfo = Object.assign({}, state);
-          userInfo['loginStatus'] = false;
-          userInfo['loginError'] = true;
-          return userInfo;
-
-        default:
-
-          var userInfo = Object.assign({}, state);
-          return userInfo;
-      }
-    };
+const cleanPermissions = (perms) => {
+  for(var index in perms){
+    for(var key in perms[index]){
+      perms[index][CAMEL_CASE_IT(key)] = perms[index][key];
+      if(key.indexOf('_') != -1) delete perms[index][key];
+    }
   }
 
-  cleanPermissions(perms){
+  return perms;
+}
 
-    for(var index in perms){
+const checkAdminPermissions = (perms) => (
+  Object.values(perms).some((perm) => perm.role == 'administrator' && perm.projectName == 'Administration')
+)
 
-      for(var key in perms[index]){
-
-        perms[index][CAMEL_CASE_IT(key)] = perms[index][key];
-        if(key.indexOf('_') != -1) delete perms[index][key];
-      }
-    }
-
-    return perms;
+const janusReducer = (state, action) => {
+  if (!state) state = {
+    userId: null,
+    email: '',
+    token: '',
+    first_name: '',
+    last_name: '',
+    permissions: []
   }
 
-  checkAdminPermissions(perms){
-
-    // Check for administration privileges.
-    var masterPerms = false;
-    for(var index in perms){
-
-      if(perms[index]['role'] == 'administrator'){
-
-        if(perms[index]['projectName'] == 'Administration'){
-
-          masterPerms = true;
-        }
+  switch(action.type) {
+    case 'LOG_IN':
+      return {
+        ...state,
+         userEmail: action.email
       }
-    }
 
-    return masterPerms;
+    case 'LOGGED_IN':
+      /* 
+       * Copy the new data from the auth server to the local Redux store.
+       * Also keep an eye on that 'cleanPermissions' function. The client
+       * wants its vars in camel case.
+       */
+      let permissions = cleanPermissions(action.data.permissions)
+      return {
+        ...state,
+        ...action.data,
+        permissions,
+        loginStatus: true,
+        loginError: false,
+        masterPerms: checkAdminPermissions(permissions),
+      }
+
+    case 'LOGGED_OUT':
+      return {
+        ...state,
+        userId: null,
+        permissions: [],
+        masterPerms: false,
+        loginStatus: false,
+        logError: false,
+        loginErrorMsg: 'Invalid sign in.',
+      }
+    case 'LOG_ERROR':
+      return {
+        ...state,
+        loginStatus: false,
+        loginError: true
+      }
+
+    default:
+      return state
   }
 }
+
+export default janusReducer

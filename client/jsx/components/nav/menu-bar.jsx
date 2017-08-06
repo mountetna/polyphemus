@@ -1,114 +1,71 @@
-import * as React from 'react';
+import * as React from 'react'
 
-export default class MenuBar extends React.Component{
-
+export default class MenuBar extends React.Component {
   constructor(props){
-
-    super(props);
-
-    this['state'] = {
-
+    super(props)
+    this.state = {
       open: false
     }
   }
 
   toggle(event){
-
-    var open = (this['state']['open']) ? false : true;
-    this.setState({ open: open });
+    this.setState({ open: !this.state.open })
   }
 
   closePanel(event){
-
-    this.setState({ open: false });
+    this.setState({ open: false })
   }
 
   logOut(event){
-
-    this.setState({ open: false });
-    this['props'].logOut();
+    this.setState({ open: false })
+    this.props.logOut()
   }
 
-  renderUserMenu(){
-
-    var userInfo = this['props']['userInfo'];
+  renderUserMenu() {
+    var { loginStatus, loginError, userEmail } = this.props
     
-    if(userInfo['loginStatus'] && !userInfo['loginError']){
+    if (!loginStatus || loginError) return null
+    
 
-      var height = (this['state']['open']) ? 'auto' : '100%';
-      var userDropdownGroupProps = {
-
-        className: 'user-menu-dropdown-group',
-        style: { 'height': height },
-        onMouseLeave: this.closePanel.bind(this)
-      };
-
-      return (
-
-        <div { ...userDropdownGroupProps } >
-
-          <button className='user-menu-dropdown-btn' onClick={ this['toggle'].bind(this) } >
-
-            { userInfo['userEmail'] }
-
-            <div className='user-menu-arrow-group'>
-              
-              <span className='glyphicon glyphicon-triangle-bottom'></span>
-            </div>
-          </button>
-          <div className='user-dropdown-menu'>
-
-            <a href='/user-admin' className='user-dropdown-menu-item'>
-
-              { 'user admin' }
-            </a>
-            <div className='user-dropdown-menu-item' onClick={ this['logOut'].bind(this) }>
-
-              { 'log out' }
-            </div>
-          </div>
-        </div>
-      );
+    var userDropdownGroupProps = {
+      className: 'user-menu-dropdown-group',
+      style: {
+        height: (this.state.open) ? 'auto' : '100%'
+      },
+      onMouseLeave: this.closePanel.bind(this)
     }
-    else{
-
-      return ''
-    }
-  }
-
-  render(){
 
     return (
+      <div { ...userDropdownGroupProps } >
+        <button 
+          className='user-menu-dropdown-btn'
+          onClick={ this.toggle.bind(this) } >
+          { userEmail }
+          <div className='user-menu-arrow-group'>
+            <span className='glyphicon glyphicon-triangle-bottom'></span>
+          </div>
+        </button>
 
-      <div id='nav-menu'>
+        <div className='user-dropdown-menu'>
+          <a href='/user-admin' className='user-dropdown-menu-item'>
+            { 'user admin' }
+          </a>
 
-        { this.renderUserMenu() }
-        {/*
-        <div id='master-search-group'>
-
-          <button id='master-search-button'>
-
-            <span className='glyphicon glyphicon-search white-glyphicon'></span>
-          </button>
+          <div 
+            className='user-dropdown-menu-item' 
+            onClick={ this.logOut.bind(this) }>
+            { 'log out' }
+          </div>
         </div>
-        <button className='nav-menu-btn'>
-
-          { 'ACTIVITY' }
-        </button>
-        <button className='nav-menu-btn'>
-
-          { 'DOCS' }
-        </button>
-        <button className='nav-menu-btn'>
-
-          { 'PLOT' }
-        </button>
-        <a className='nav-menu-btn' href='./experiments.html'>
-
-          { 'EXPERIMENTS' }
-        </a>
-        */}
       </div>
-    );
-  } 
+    )
+  }
+
+  render() {
+    return (
+      <div id='nav-menu'>
+        { this.renderUserMenu() }
+      </div>
+    )
+  }
 }

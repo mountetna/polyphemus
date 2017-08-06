@@ -7,9 +7,7 @@ import UserAdminViewContainer from './components/user-admin-view-container';
 import JanusLoggerController from './janus-logger-controller';
 
 class UserAdminController{
-
   constructor(){
-
     this['model'] = null
     this['janusLogger'] = new JanusLoggerController();
 

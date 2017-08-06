@@ -1,105 +1,71 @@
 import * as React from 'react'
 
-export default class LoginPanel extends React.Component{
-
-  constructor(){
-
-    super();
+export default class LoginPanel extends React.Component {
+  constructor() {
+    super()
+    this.state = { email: '', password: '' }
   }
 
-  parseError(){
+  runOnEnter(event) {
+    if (event.keyCode != 13 && event.which != 13) return
+    this.logIn()
+  }
 
-    if(this['props']['userInfo']['loginError']){
+  logIn() {
+    let { email, password } = this.state
 
-      return { display: 'block' };
-    }
-    else{
-
-      return { display: 'none' };
+    if (password != '' && VALIDATE_EMAIL(email)) {
+      this.props.requestLogin(email, password)
     }
   }
 
-  logIn(){
-
-    var userEmail = document.getElementById('email-input').value;
-
-    if(!VALIDATE_EMAIL(userEmail)){
-
-      this['props']['userInfo']['loginError'] = true;
-      this['props']['userInfo']['loginErrorMsg'] = 'Bad email.'
-      this.forceUpdate()
-      return;
-    }
-
-    var userPass = document.getElementById('pass-input').value;
-    this['props'].logIn(userEmail, userPass);
+  setEmail(event) {
+    this.setState( { email: event.target.value } )
   }
-
-  runOnEnter(event){
-
-    event = event || window.event;
-    if(event['keyCode'] == 13 || event['which'] == 13){
-
-      var userEmail = document.getElementById('email-input').value;
-      var userPass = document.getElementById('pass-input').value;
-
-      if(userPass != '' && VALIDATE_EMAIL(userEmail)){
-
-        this['props'].logIn(userEmail, userPass);
-      }
-    }
-    else{
-
-      return;
-    }
+  
+  setPassword(event) {
+    this.setState( { password: event.target.value } )
   }
 
   render(){
-
     var emailInputProps = {
-
-      'id': 'email-input',
-      'className': 'log-input',
-      'type': 'text',
-      'placeholder': 'Enter your email',
-      'onKeyPress': this.runOnEnter.bind(this)
+      id: 'email-input',
+      className: 'log-input',
+      type: 'text',
+      placeholder: 'Enter your email',
+      onChange: this.setEmail.bind(this),
+      onKeyPress: this.runOnEnter.bind(this)
     }
 
     var passInputProps = {
-
-      'id': 'pass-input',
-      'className': 'log-input',
-      'type': 'password',
-      'placeholder': 'Enter your password',
-      'onKeyPress': this.runOnEnter.bind(this)
+      id: 'pass-input',
+      className: 'log-input',
+      type: 'password',
+      placeholder: 'Enter your password',
+      onChange: this.setPassword.bind(this),
+      onKeyPress: this.runOnEnter.bind(this)
     }
 
     var errMsgProps = {
-
-      'className': 'log-error-message',
-      'style': this.parseError()
+      className: 'log-error-message',
+      style: { display: this.props.loginError ? 'block' : 'none' }
     }
 
     var logBtnProps = {
-
       'className': 'login-button',
-      'onClick': this['logIn'].bind(this)
+      'onClick': this.logIn.bind(this)
     }
 
     return (
-
       <div id='login-group'>
-
         <input { ...emailInputProps }/>
         <br />
         <input { ...passInputProps } />
         <br />
         <div { ...errMsgProps }>
-
-          { this['props']['userInfo']['loginErrorMsg'] }
+          { this.props.loginErrorMsg }
         </div>
         <button { ...logBtnProps }>
-
           SIGN IN
         </button>
       </div>

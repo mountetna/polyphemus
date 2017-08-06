@@ -1,52 +1,37 @@
-import * as React from 'react';
+import React from 'react'
+import TitleBar  from './nav/title-bar'
+import MenuBar   from '../containers/menu-bar'
+import LoginPanel from '../containers/login-panel'
 
-import TitleBar  from './nav/title-bar';
-import MenuBarContainer   from './nav/menu-bar-container';
-import LoginPanelContainer from './auth/login-panel-container';
-
-export default class BasicView extends React.Component{
-
-  constructor(){
-
-    super();
+export default class BasicView extends React.Component {
+  constructor() {
+    super()
   }
 
-  renderContent(){
-
-    if(!this['props']['userInfo']['loginStatus']){
-
-      return this.renderLoginView();
+  renderContent() {
+    if (!this.props.loginStatus) {
+      return (
+        <div id='listing-group'>
+          <LoginPanel />
+        </div>
+      )
     }
   }
 
-  renderLoginView(){
-
+  render() {
     return (
-
-      <div id='listing-group'>
-        
-        <LoginPanelContainer />
-      </div>
-    );
-  }
-
-  render(){
-
-    return (
-
       <div id='polyphemus-group'>
-        
-        <div id='header-group'>
-          
-          <TitleBar />
-          <MenuBarContainer />
-        </div>
-        <div className='logo-group'>
 
+        <div id='header-group'>
+          <TitleBar />
+          <MenuBar/>
+        </div>
+
+        <div className='logo-group'>
           <img src='/img/logo_basic.png' alt='' />
         </div>
-        <div id='left-column-group'>
-        </div>
+
+        <div id='left-column-group'/>
 
         <div id='user-info-group'>
         { this.renderContent() }
