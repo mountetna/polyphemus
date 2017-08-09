@@ -10,15 +10,15 @@ class UserAdminController < Polyphemus::Controller
     return send(@action)
   end
 
-  def get_users
+  def users
     janus_request('get-users')
   end
 
-  def get_projects
+  def projects
     janus_request('get-projects')
   end
 
-  def get_permissions
+  def permissions
     janus_request('get-permissions')
   end
 

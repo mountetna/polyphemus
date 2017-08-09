@@ -11,9 +11,9 @@ class Polyphemus
   post '/check', 'user_log#check_log'
 
   # User administration end points
-  post '/get-users', 'user_admin#get_users'
-  post '/get-projects', 'user_admin#get_projects'
-  post '/get-permissions', 'user_admin#get_permissions'
+  post '/users', 'user_admin#users'
+  post '/projects', 'user_admin#projects'
+  post '/permissions', 'user_admin#permissions'
   post '/upload-permissions', 'user_admin#upload_permissions'
   post '/remove-permissions', 'user_admin#remove_permissions'
 

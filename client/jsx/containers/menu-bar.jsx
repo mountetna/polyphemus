@@ -1,17 +1,19 @@
 import { connect } from 'react-redux'
 import MenuBar from '../components/nav/menu-bar'
-import { logOut } from '../actions/janus'
+import { requestLogout } from '../actions/janus'
+import { currentUser } from '../selectors/user'
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    ...state.userInfo
+    ...currentUser(state),
+    error: state.error
   }
 }
 
 const MenuBarContainer = connect(
   mapStateToProps,
   {
-    logOut
+    requestLogout
   },
 )(MenuBar)
 

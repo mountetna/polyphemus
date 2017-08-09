@@ -1,3 +1,10 @@
+// api.js
+// Here go direct connections to endpoints using the fetch
+// interface. Exported functions all return a promise or
+// throw an error (used with .then() and .catch()
+// respectively
+
+// shortcut for setting headers
 export const headers = (...types) => {
   var _headers = {}
 
@@ -21,6 +28,8 @@ export const headers = (...types) => {
   return _headers
 }
 
+// first responder, split between .then() and .catch() by
+// using throw
 const checkResponse = (response) => {
   if (response.ok) {
     return response
@@ -31,8 +40,10 @@ const checkResponse = (response) => {
   }
 }
 
+// promise for a json parse of the response
 const json = (response) => response.json()
 
+// promise for a json-formatted error message
 const json_error = (error) => {
   return error.response.json().then(
     (response) => {
@@ -42,6 +53,7 @@ const json_error = (error) => {
   )
 }
 
+// compose a Object into a FormData object
 const formBody = (terms) => {
   let form = new FormData()
   for (let key of Object.keys(terms)) {
@@ -50,11 +62,23 @@ const formBody = (terms) => {
   return form
 }
 
-export const postLoginEmailPassword = (email, password) => postForm('/login', formBody({ email, password }))
+// compose an Object into a url-encoded string
+const encodeBody = (terms) =>
+  Object.keys(terms)
+    .reduce(
+      (list,key) => [ ...list, `${encodeURIComponent(key)}=${encodeURIComponent(terms[key])}`],
+      []
+    ).join('&')
 
-export const postCheckToken = (token) => postForm('/check', formBody({ token }))
+// login related functions
+export const postLoginEmailPassword = (email, password) => postForm('/login', encodeBody({ email, password }))
+export const postLogout = (token) => postForm('/logout', encodeBody({ token }))
+export const postCheckToken = (token) => postForm('/check', encodeBody({ token }))
 
-export const postLogout = (token) => postForm('/logout', formBody({ token }))
+// project admin related functions
+export const postProjects = (token) => postForm('/projects', encodeBody({ token }))
+export const postPermissions = (token) => postForm('/permissions', encodeBody({ token }))
+export const postUsers = (token) => postForm('/users', encodeBody({ token }))
 
 export const postForm = (path, body) =>
   fetch(

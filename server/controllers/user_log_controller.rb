@@ -2,11 +2,11 @@
 class UserLogController < Polyphemus::Controller
 
   def run()
-    # Depending on whether we get token or email/pass combo we perform different
+    # Depending on whether we get token or email/password combo we perform different
     # checks.
     if @action == 'log_in'
-      # Check that the email/pass is present.
-      check_params('email', 'pass')
+      # Check that the email/password is present.
+      check_params('email', 'password')
     else
       # Check that a token is present.
       check_param('token')
@@ -23,13 +23,13 @@ class UserLogController < Polyphemus::Controller
         'login', 
         token: nil,
         email: @params['email'], 
-        pass: @params['pass']
+        pass: @params['password']
       )
   end
 
   def check_log()
     # Check if the user is an administrator.
-    check_admin
+    #check_admin
 
     janus_request('check')
   end

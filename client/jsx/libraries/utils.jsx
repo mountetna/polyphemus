@@ -291,12 +291,12 @@ var SNAKE_CASE_IT = function(str){
   return str;
 }
 
-var LOGGED_OUT_ADDR = function(){
+var LOGGED_OUT_ADDR = function() {
   var base = 'https://janus-dev.ucsf-immunoprofiler.org/Shibboleth.sso/Logout';
   return base+'?return=https%3A%2F%2Fpolyphemus-dev.ucsf.edu%2Flogged-out';
 }
 
-var NOT_LOGGED_ADDR = function(){
+var NOT_LOGGED_ADDR = function() {
   var base = 'https://janus-dev.ucsf-immunoprofiler.org/login';
   return base+'?refer=https%3A%2F%2Fpolyphemus-dev.ucsf.edu%2F';
 }

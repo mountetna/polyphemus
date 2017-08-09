@@ -1,26 +1,20 @@
 import * as React from 'react';
 
 export default class GenericAdminEntry extends React.Component{
-
   constructor(props){
-
     super(props);
-
-    this['state'] = {
-
-      'editShow': false,
-      'editActive': false
+    this.state = {
+      editShow: false,
+      editActive: false
     };
   }
 
   activateEntryEdit(){
-
-    this.setState({ 'editActive': true });
+    this.setState({ editActive: true });
   }
 
   deactivateEntryEdit(){
-
-    this.setState({ 'editActive': false });
+    this.setState({ editActive: false });
   }
 
   /*
@@ -28,86 +22,82 @@ export default class GenericAdminEntry extends React.Component{
    * their stubs are required here to complete this component.
    */
   resetEntry(){
-
     // null
   }
 
   saveEntry(){
-
     // null
   }
 
   deleteEntry(){
-
     // null
   }
 
   renderEditControlGroup(){
-
     // General control group properties.
     var controlBoxProps = {
 
-      'className': 'admin-control-box'
+      className: 'admin-control-box'
     };
 
     var editBtnProps = {
 
-      'className': 'admin-entry-edit-btn',
-      'title': 'Edit the entry.',
-      'onClick': this['activateEntryEdit'].bind(this)
+      className: 'admin-entry-edit-btn',
+      title: 'Edit the entry.',
+      onClick: this.activateEntryEdit.bind(this)
     };
 
     var resetBtnProps = {
 
-      'className': 'admin-entry-edit-btn',
-      'title': 'Reset the entry.',
-      'onClick': this['resetEntry'].bind(this)
+      className: 'admin-entry-edit-btn',
+      title: 'Reset the entry.',
+      onClick: this.resetEntry.bind(this)
     };
 
     var cancelBtnProps = {
 
-      'className': 'admin-entry-edit-btn',
-      'title': 'Cancel the entry edit.',
-      'onClick': this['deactivateEntryEdit'].bind(this)
+      className: 'admin-entry-edit-btn',
+      title: 'Cancel the entry edit.',
+      onClick: this.deactivateEntryEdit.bind(this)
     };
 
     var saveBtnProps = {
 
-      'className': 'admin-entry-edit-btn',
-      'title': 'Save the entry edit.',
-      'onClick': this['saveEntry'].bind(this)
+      className: 'admin-entry-edit-btn',
+      title: 'Save the entry edit.',
+      onClick: this.saveEntry.bind(this)
     };
 
     var deleteBtnProps = {
 
-      'className': 'admin-entry-delete-btn',
-      'title': 'Delete the entry.',
-      'onClick': this['deleteEntry'].bind(this)
+      className: 'admin-entry-delete-btn',
+      title: 'Delete the entry.',
+      onClick: this.deleteEntry.bind(this)
     };
 
     // Display settings
-    if(this['state']['editShow']){
+    if(this.state.editShow){
 
-      controlBoxProps['style'] = { 'visibility': 'visible' };
+      controlBoxProps.style = { visibility: 'visible' };
     }
     else{
 
-      controlBoxProps['style'] = { 'visibility': 'hidden' };
+      controlBoxProps.style = { visibility: 'hidden' };
     }
 
-    if(this['state']['editActive']){
+    if(this.state.editActive){
 
-      editBtnProps['style'] = { 'display': 'none' };
-      resetBtnProps['style'] = { 'display': 'none' };
-      cancelBtnProps['style'] = { 'display': 'inline-block' };
-      saveBtnProps['style'] = { 'display': 'inline-block' };
+      editBtnProps.style = { display: 'none' };
+      resetBtnProps.style = { display: 'none' };
+      cancelBtnProps.style = { display: 'inline-block' };
+      saveBtnProps.style = { display: 'inline-block' };
     }
     else{
 
-      editBtnProps['style'] = { 'display': 'inline-block' };
-      resetBtnProps['style'] = { 'display': 'inline-block' };
-      cancelBtnProps['style'] = { 'display': 'none' };
-      saveBtnProps['style'] = { 'display': 'none' };
+      editBtnProps.style = { display: 'inline-block' };
+      resetBtnProps.style = { display: 'inline-block' };
+      cancelBtnProps.style = { display: 'none' };
+      saveBtnProps.style = { display: 'none' };
     }
 
     return (
@@ -140,13 +130,13 @@ export default class GenericAdminEntry extends React.Component{
 
   showControlGroup(event){
 
-    this.setState({ 'editShow': true });
+    this.setState({ editShow: true });
   }
 
   hideControlGroup(event){
 
     // Only hide if we are NOT in edit mode.
-    if(!this['state']['editActive']) this.setState({ 'editShow': false });
+    if(!this.state.editActive) this.setState({ editShow: false });
   }
 
   // This function is overwritten by the inheriting class.

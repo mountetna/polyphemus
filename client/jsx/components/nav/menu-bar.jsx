@@ -18,13 +18,13 @@ export default class MenuBar extends React.Component {
 
   logOut(event){
     this.setState({ open: false })
-    this.props.logOut()
+    this.props.requestLogout()
   }
 
   renderUserMenu() {
-    var { loginStatus, loginError, userEmail } = this.props
+    var { error, email } = this.props
     
-    if (!loginStatus || loginError) return null
+    if (!email || error) return null
     
 
     var userDropdownGroupProps = {
@@ -40,7 +40,7 @@ export default class MenuBar extends React.Component {
         <button 
           className='user-menu-dropdown-btn'
           onClick={ this.toggle.bind(this) } >
-          { userEmail }
+          { email }
           <div className='user-menu-arrow-group'>
             <span className='glyphicon glyphicon-triangle-bottom'></span>
           </div>

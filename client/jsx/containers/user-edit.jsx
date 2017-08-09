@@ -1,12 +1,9 @@
 import * as ReactRedux from 'react-redux';
-import UserEdit from './user-edit';
+import UserEdit from '../components/user-admin/user-edit'
 
 const mapStateToProps = (state, ownProps)=>{
-
-  // state == redux store
   return {
-
-    'adminInfo': state['adminInfo']
+    users: state.users
   };
 }
 

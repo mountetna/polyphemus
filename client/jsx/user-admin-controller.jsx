@@ -2,78 +2,37 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
-import UserAdminModel from './models/user-admin-model';
-import UserAdminViewContainer from './components/user-admin-view-container';
-import JanusLoggerController from './janus-logger-controller';
+import createStore from './models/store'
+import UserAdminView from './components/user-admin-view';
+import { verifyLogin, requestProjects, requestPermissions, requestUsers } from './actions/janus'
 
 class UserAdminController{
-  constructor(){
-    this['model'] = null
-    this['janusLogger'] = new JanusLoggerController();
+  constructor() {
+    this.store = createStore(this.routeAction.bind(this))
 
-    this.initDataStore();
-
-    /*
-     * We pass in the store since we bind events to it. The AJAX callbacks will
-     * be dispatched using the store.
-     */
-    this['janusLogger']['model']['store'] = this['model']['store'];
-    this['janusLogger'].checkLog();
-  }
-
-  initDataStore(){
-
-    this['model'] = new UserAdminModel();
-
-    // Event hooks from the UI to the Controller
-    this['model']['store'].subscribe(()=>{ 
-
-      var lastAction = this['model']['store'].getState()['lastAction'];
-      this.routeAction(lastAction);
-    });
+    this.buildUI()
+    this.store.dispatch(verifyLogin())
+    this.store.dispatch(requestProjects())
+    this.store.dispatch(requestPermissions())
+    this.store.dispatch(requestUsers())
   }
 
   buildUI(){
 
     ReactDOM.render(
-
-      <Provider store={ this['model']['store'] }>
-
-        <UserAdminViewContainer />
+      <Provider store={ this.store }>
+        <UserAdminView />
       </Provider>,
       document.getElementById('ui-group')
-    );
+    )
   }
 
   routeAction(action){
-
     switch(action['type']){
-
-      case 'LOGGED_IN':
-
-        this.buildUI();
-        this.fetchAdminData();
-        break;
-      case 'LOG_OUT':
-
-        this['janusLogger'].logOut(COOKIES.getItem(TOKEN_NAME));
-        break;
-      case 'LOGGED_OUT':
-
-        window.location = LOGGED_OUT_ADDR();
-        break
-      case 'NOT_LOGGED':
-
-        window.location = NOT_LOGGED_ADDR();
-        break;
-      case 'LOGOUT_ALL':
-
-        this.logoutAll();
-        break;
       case 'SAVE_PERMISSION':
+        this.saveSinglePermission(action['permission'])
+        break
 
-        this.saveSinglePermission(action['permission']);
-        break;
       case 'DOWNLOAD_PERMISSIONS':
 
         this.downloadPermissions();
@@ -91,21 +50,6 @@ class UserAdminController{
 
         // none
         break;
-    }
-  }
-
-  fetchAdminData(){
-
-    var userInfo = this['model']['store'].getState()['userInfo'];    
-    if(!userInfo['masterPerms']){
-
-      window.location = '/';
-    }
-    else{
-
-      this.adminDataCall('/get-projects');
-      this.adminDataCall('/get-permissions');
-      this.adminDataCall('/get-users');
     }
   }
 

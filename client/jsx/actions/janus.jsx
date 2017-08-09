@@ -1,30 +1,44 @@
 import { postLoginEmailPassword, postCheckToken, postLogout } from '../api'
+import { postProjects, postPermissions, postUsers } from '../api'
 import { getToken, setToken, removeToken } from '../cookies'
 
-export const loggedIn = (email,password) => ({
-  type: 'LOGGED_IN',
-  email, password
-})
+export const loggedIn = (user) => {
+  let { email, token } = user
 
-export const loggedOut = () => ({
-  type: 'LOGGED_OUT'
-})
+  // set the token so we can be sure they are real
+  setToken(token)
 
-export const verifyLogin = () => (dispatch) => {
-  let token = getToken()
-  if (token != undefined) {
-    checkToken(token)
-      .then((response) => {
-        if (response.user_info) dispatch(verifyUser(response.user_info))
-      })
-  } else {
-    attemptLogin()
+  // email is the Janus id key - we'll identify
+  // logged-in users with this
+  return {
+    type: 'LOGGED_IN',
+    email
   }
 }
 
-const attemptLogin = () => {
+export const loggedOut = () => {
   removeToken()
-  redirect_to('/login')
+  return { type: 'LOGGED_OUT' }
+}
+
+export const logError = (msg) => ({
+  type: 'LOG_ERROR',
+  error: msg
+})
+
+export const verifyLogin = (success,error) => (dispatch) => {
+  let token = getToken()
+  if (token != undefined) {
+    postCheckToken(token)
+      .then((response) => {
+        if (response.user_info) dispatch(verifyUser(response.user_info))
+      }).catch(() => {
+        dispatch(loggedOut())
+        dispatch(logError('Invalid sign in.'))
+      })
+  } else {
+    dispatch(loggedOut())
+  }
 }
 
 const noPermissionAlert = () => {
@@ -37,41 +51,47 @@ const noPermissionAlert = () => {
 export const verifyUser = (user) => (dispatch) => {
   if (user.permissions.length == 0) {
     noPermissionAlert()
-    dispatch(logOut(token))
+    dispatch(loggedOut())
     return
   }
 
-  setToken(token)
-
-  dispatch(updateUser(user))
-}
-
-export const updateUser = (user) => {
-  let { email, token, first_name, last_name, user_id, permissions } = user
-  return {
-    type: 'LOGGED_IN',
-    email,
-    token,
-    first_name,
-    last_name,
-    user_id,
-    permissions
-  }
+  dispatch(addUser(user))
+  dispatch(loggedIn(user))
 }
 
 export const requestLogin = (email, password) => (dispatch) => {
   postLoginEmailPassword(email,password)
     .then((response) => {
-      if (response.user_info) dispatch(updateUser(response.user_info))
+      if (response.success) 
+        dispatch(loggedIn(response.user_info))
+      else
+        dispatch(logError(response.error))
     }).catch((error) => {
       if (!error.response) throw error
     })
 }
 
-export const requestLogout = (token) => (dispatch) => {
-  postLogout(token)
+export const requestLogout = () => (dispatch) => {
+  postLogout(getToken())
     .then((response) => {
       removeToken()
       dispatch(loggedOut())
     })
 }
+
+const requestData = (post, resolve, key) => (dispatch) => {
+  post(getToken())
+    .then((response) => {
+      if (response.success) {
+        for (let value of response[key]) dispatch(resolve(value))
+      }
+    })
+}
+
+export const addProject = (project) => ({ type: 'ADD_PROJECT', ...project })
+export const addPermission = (permission) => ({ type: 'ADD_PERMISSION', ...permission })
+export const addUser = (user) => ({ type: 'ADD_USER', ...user })
+
+export const requestProjects = () => requestData(postProjects, addProject, 'projects')
+export const requestPermissions = () => requestData(postPermissions, addPermission, 'permissions')
+export const requestUsers = () => requestData(postUsers, addUser, 'users')

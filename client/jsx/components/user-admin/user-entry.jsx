@@ -5,32 +5,30 @@ export default class UserEntry extends GenericAdminEntry{
 
   render(){
 
-    var adminEntryProps = {
+    let { email, first_name, last_name } = this.props.user || {}
 
+    var adminEntryProps = {
       'className': 'admin-edit-entry-group',
       'onMouseEnter': this['showControlGroup'].bind(this),
       'onMouseLeave': this['hideControlGroup'].bind(this)
     };
 
     var emailEntryProps = {
-
       'className': 'admin-entry-input',
-      'value': this['props']['user']['email'],
-      'title': this['props']['user']['email']
+      'value': email,
+      'title': email
     };
 
     var firstNameEntryProps = {
-
       'className': 'admin-entry-input',
-      'value': this['props']['user']['firstName'],
-      'title': this['props']['user']['firstName']
+      'value': first_name,
+      'title': first_name
     };
 
     var lastNameEntryProps = {
-
       'className': 'admin-entry-input',
-      'value': this['props']['user']['lastName'],
-      'title': this['props']['user']['lastName']
+      'value': last_name,
+      'title': last_name
     };
 
     if(!this['state']['editActive']){

@@ -1,10 +1,12 @@
 import { connect } from 'react-redux'
 import LoginPanel from '../components/auth/login-panel'
 import { requestLogin } from '../actions/janus'
+import { currentUser } from '../selectors/user'
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    ...state.userInfo
+    ...currentUser(state),
+    error: state.error
   }
 }
 

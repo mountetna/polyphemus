@@ -27,7 +27,7 @@ export default class LoginPanel extends React.Component {
     this.setState( { password: event.target.value } )
   }
 
-  render(){
+  render() {
     var emailInputProps = {
       id: 'email-input',
       className: 'log-input',
@@ -48,7 +48,7 @@ export default class LoginPanel extends React.Component {
 
     var errMsgProps = {
       className: 'log-error-message',
-      style: { display: this.props.loginError ? 'block' : 'none' }
+      style: { display: this.props.error ? 'block' : 'none' }
     }
 
     var logBtnProps = {
@@ -63,7 +63,7 @@ export default class LoginPanel extends React.Component {
         <input { ...passInputProps } />
         <br />
         <div { ...errMsgProps }>
-          { this.props.loginErrorMsg }
+          { this.props.error }
         </div>
         <button { ...logBtnProps }>
           SIGN IN

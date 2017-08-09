@@ -9,7 +9,7 @@ export default class BasicView extends React.Component {
   }
 
   renderContent() {
-    if (!this.props.loginStatus) {
+    if (!this.props.email) {
       return (
         <div id='listing-group'>
           <LoginPanel />

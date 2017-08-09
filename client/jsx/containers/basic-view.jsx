@@ -1,9 +1,10 @@
 import { connect } from 'react-redux'
+import { currentUser } from '../selectors/user'
 import BasicView from '../components/basic-view'
 
 const BasicViewContainer = connect(
   (state, props) => ({
-    ...state.userInfo
+    ...currentUser(state)
   })
 )(BasicView)
 

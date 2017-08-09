@@ -1,31 +1,23 @@
 import * as React from 'react';
 
-import TitleBar  from './nav/title-bar';
-import MenuBarContainer   from './nav/menu-bar-container';
-
-import UserEditContainer from './user-admin/user-edit-container';
-import ProjectEditContainer from './user-admin/project-edit-container';
-import PermissionEditContainer from './user-admin/permission-edit-container';
+import TitleBar  from './nav/title-bar'
+import MenuBar from '../containers/menu-bar'
+import UserEdit from '../containers/user-edit'
+import ProjectEdit from '../containers/project-edit'
+import PermissionEdit from '../containers/permission-edit'
 
 export default class UserAdminView extends React.Component{
 
   constructor(){
-
-    super();
+    super()
   }
 
   render(){
-
-    var userInfo = this['props']['userInfo'];
-
     return (
-
       <div id='admin-group'>
-
         <div id='header-group'>
-          
           <TitleBar />
-          <MenuBarContainer />
+          <MenuBar />
         </div>
         <div className='logo-group'>
 
@@ -33,9 +25,9 @@ export default class UserAdminView extends React.Component{
         </div>
         <div id='left-column-group'>
         </div>
-        { (userInfo['masterPerms']) ? <UserEditContainer /> : '' }
-        { (userInfo['masterPerms']) ? <ProjectEditContainer /> : '' }
-        { (userInfo['masterPerms']) ? <PermissionEditContainer /> : '' }
+        <UserEdit />
+        <ProjectEdit />
+        <PermissionEdit />
       </div>
     );
   }

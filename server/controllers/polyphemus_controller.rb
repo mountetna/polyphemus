@@ -9,7 +9,7 @@ class Polyphemus
     def check_param(*names)
       missing = names.reject { |name| @params.key?(name) }
       unless missing.empty?
-        raise Polyphemus::BadRequest, "No param: #{missing.join(" ")}"
+        raise Polyphemus::BadRequest, "No param: #{missing.join(" ")} for #{@params.keys.join(" ")}"
       end
     end
     alias_method :check_params, :check_param
