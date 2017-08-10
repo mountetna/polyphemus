@@ -62,9 +62,9 @@ export const verifyUser = (user) => (dispatch) => {
 export const requestLogin = (email, password) => (dispatch) => {
   postLoginEmailPassword(email,password)
     .then((response) => {
-      if (response.success) 
-        dispatch(loggedIn(response.user_info))
-      else
+      if (response.success) {
+        dispatch(verifyUser(response.user_info))
+      } else
         dispatch(logError(response.error))
     }).catch((error) => {
       if (!error.response) throw error
