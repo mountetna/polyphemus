@@ -1,10 +1,10 @@
 import * as ReactRedux from 'react-redux';
 import PermissionEdit from '../components/user-admin/permission-edit';
-import { permissionList } from '../selectors/permission';
+import { savePermission } from '../actions/janus'
 
 const mapStateToProps = (state, ownProps)=>{
   return {
-    permissions: permissionList(state),
+    permissions: state.permissions,
     projects: state.projects,
     users: state.users
   };
@@ -18,8 +18,7 @@ const mapDispatchToProps = (dispatch, ownProps)=>{
     },
 
     savePermission: (permission)=>{
-      var action = { type: 'SAVE_PERMISSION', permission };
-      dispatch(action);
+      dispatch(savePermission(permission));
     },
 
     removeUnsavedPermission: (reactKey)=>{

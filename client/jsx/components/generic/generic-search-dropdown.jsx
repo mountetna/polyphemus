@@ -1,288 +1,164 @@
 import * as React from 'react';
 
 export default class GenericSearchDropdown extends React.Component{
-
-  constructor(props){
-
+  constructor(props) {
     super(props);
 
-    this['state'] = {
-
-      'inputValue': '',
-      'trayActive': false,
-      'searchEnabled': false,
-      'selectedIndex': null
+    this.state = {
+      trayActive: false,
+      searchEnabled: false,
+      selectedIndex: null
     };
   }
 
-  setInputClass(){
-
+  setInputClass() {
     var className = 'search-dropdown-input';
-    if(this['props']['editActive']){
-
+    if (this.props.editActive) {
       className = 'search-dropdown-input';
 
-      if(this['state']['trayActive']){
-
+      if (this.state.trayActive) {
         className = 'search-dropdown-input search-dropdown-input-active';
       }
-      else{
-
+      else {
         className = 'search-dropdown-input';
       }
     }
-    else{
-
+    else {
       className = 'search-dropdown-input-inactive';
     }
 
     return className;
   }
 
-  setInputDisabled(){
-
-    var disabled = false
-    if(this['props']['editActive']){
-
-      disabled = false;
-
-      if(this['state']['searchEnabled']){
-
-        disabled = false;
-      }
-      else{
-
-        disabled = true;
-      }
-    }
-    else{
-
-      disabled = true;
-    }
-
-    return disabled;
+  setInputDisabled() {
+    return !this.props.editActive || !this.state.searchEnabled
   }
 
-  setButtonStyle(){
-
-    var btnStyle = { 'display': 'block' };
-    if(this['props']['editActive']){
-
-      btnStyle = { 'display': 'block' };
-    }
-    else{
-
-      btnStyle = { 'display': 'none' };
-    }
-
-    return btnStyle;
+  setButtonStyle() {
+    return { display: this.props.editActive ? 'block' : 'none' }
   }
 
-  setDropdownStyle(){
-
-    var dropdownStyle = { 'display': 'block' };
-    if(this['props']['editActive']){
-
-      dropdownStyle = { 'display': 'block', 'zIndex': 10000 };
-
-      if(this['state']['trayActive']){
-
-        dropdownStyle = { 'display': 'block', 'zIndex': 10000 };
-      }
-      else{
-
-        dropdownStyle = { 'display': 'none', 'zIndex': 0 };
-      }
-    }
-    else{
-
-      dropdownStyle = { 'display': 'none', 'zIndex': 0 };
-    }
-
-    return dropdownStyle;
+  setDropdownStyle() {
+    return {
+      display: this.state.trayActive ? 'block' : 'none',
+      zIndex: this.state.trayActive ? 10000 : 0
+    };
   }
 
-  entrySelectedByClick(event){
-
-    var value = event['target'].getAttribute('data-val');
+  entrySelectedByClick(event) {
+    let inputValue = event.target.getAttribute('data-val');
     this.setState({ 
+      trayActive: false,
+      selectedIndex: null
+    }, () => this.props.onChange(inputValue));
 
-      'inputValue': value,
-      'trayActive': false,
-      'selectedIndex': null
-    }, this['entrySelected']);
-
-    if(this['dropdownInput'] == undefined) return;
-    this['dropdownInput'].focus();
+    if (this.dropdownInput == undefined) return;
+    this.dropdownInput.focus();
   }
 
-  entrySelectedByEnter(value){
-
+  entrySelectedByEnter(inputValue) {
     this.setState({ 
+      trayActive: false,
+      selectedIndex: null
+    }, () => this.props.onChange(inputValue));
 
-      'inputValue': value,
-      'trayActive': false,
-      'selectedIndex': null
-    }, this['entrySelected']);
-
-    if(this['dropdownInput'] == undefined) return;
-    this['dropdownInput'].focus();
+    if (this.dropdownInput == undefined) return;
+    this.dropdownInput.focus();
   }
 
-  toggleDropdown(event){
-
-    var trayActive = (this['state']['trayActive']) ? false : true;
-    this.setState({ 'trayActive': trayActive });
+  toggleDropdown(event) {
+    this.setState({ trayActive: !this.state.trayActive });
   }
 
-  openDropdownFromClick(event){
-
-    if(!this['state']['searchEnabled']){
-
+  openDropdownFromClick(event) {
+    if (!this.state.searchEnabled) {
       this.toggleDropdown(event);
     }
   }
 
-  updateInputValue(event){
-
-    var value = event['target']['value'];
-    if(this['state']['searchEnabled'] && value['length'] >= 3){
-
-      var state = { 'inputValue': value, 'trayActive': true };
+  updateInputValue(event) {
+    let inputValue = event.target.value;
+    let state = {
+      ...this.state.searchEnabled && { trayActive: inputValue.length >= 2 }
     }
-    else if(this['state']['searchEnabled'] && value['length'] < 3){
-
-      var state = { 'inputValue': value, 'trayActive': false };
-    }
-    else{
-
-      var state = { 'inputValue': value };
-    }
-
     this.setState(state);
+    this.props.onChange(inputValue);
   }
 
-  // We do a simple string pattern match and return an entry if appropriate.
-  matchAndAdd(value, entry, index, id, listPosition){
+  selectByKeyboard(event) {
+    if (this.dropdownTrayComponent == undefined) return;
+    if (!this.state.trayActive) return;
+    if (!this.state.selectedIndex == null) return;
 
-    var text = entry;
-    var entry = String(entry);
-    if(entry.indexOf(value) !== -1){
-
-      var entryProps = {
-
-        'className': 'search-dropdown-tray-entry',
-        'key': (entry +'-'+ index),
-        'data-id': id,
-        'data-val': entry,
-        'onClick': this['entrySelectedByClick'].bind(this)
-      };
-
-      if(this['state']['selectedIndex'] == listPosition){
-
-        entryProps['className'] = 'search-dropdown-tray-entry-active';
-      }
-
-      return (
-
-        <button { ...entryProps }> 
-
-          { text }
-        </button>
-      );
-    }
-    else{
-
-      return null;
-    }
-  }
-
-  addEmpty(){
-
-    return (
-
-      <div className='search-dropdown-tray-empty' key={ GENERATE_RAND_KEY() }> 
-
-        <i>
-
-          { 'no matching entries...' }
-        </i>
-      </div>
-    );
-  }
-
-  addSuggestion(){
-
-    return (
-
-      <div className='search-dropdown-tray-empty'> 
-
-        <i>
-
-          { 'type to search...' }
-        </i>
-      </div>
-    );
-  }
-
-  selectByKeyboard(event){
-
-    if(this['dropdownTrayComponent'] == undefined) return;
-    if(!this['state']['trayActive']) return;
-    if(!this['state']['selectedIndex'] == null) return;
-
-    event = event || window['event'];
-    var range = this['dropdownTrayComponent']['childNodes']['length'];
-    var index = this['state']['selectedIndex'];
+    event = event || window.event;
+    var range = this.dropdownTrayComponent.childNodes.length;
+    var index = this.state.selectedIndex;
 
     // Navigate the dropdown list using the arrow keys.
-    if(event['keyCode'] == 38 || event['keyCode'] == 40){
-
-      if(event['keyCode'] == 38){
-
-        if(index == 0 || index == null){
-
+    if (event.keyCode == 38 || event.keyCode == 40) {
+      if (event.keyCode == 38) {
+        if (index == 0 || index == null) {
           index = range - 1;
         }
-        else{
-
+        else {
           --index;
         }
       }
 
-      if(event['keyCode'] == 40){
-
-        if(index == (range - 1) || index == null){
-
+      if (event.keyCode == 40) {
+        if (index == (range - 1) || index == null) {
           index = 0;
         }
-        else{
-
+        else {
           ++index;
         }
       }
 
-      this.setState({ 'selectedIndex': index });
+      this.setState({ selectedIndex: index });
     }
 
     // Select the entry using the 'enter' key.
-    if(event['keyCode'] == 13){
-
-      var node = this['dropdownTrayComponent']['childNodes'][index];
+    if (event.keyCode == 13) {
+      var node = this.dropdownTrayComponent.childNodes[index];
       var val = node.getAttribute('data-val');
       this.entrySelectedByEnter(val);
     }
   }
 
-  // This function is overwritten by the inheriting class.
-  entrySelected(value = null){
+  renderEntry(entry, index, selected) {
+    var entryProps = {
+      className: selected ?  'search-dropdown-tray-entry-active' : 'search-dropdown-tray-entry',
+      key: (entry +'-'+ index),
+      'data-val': entry,
+      onClick: this.entrySelectedByClick.bind(this)
+    };
 
-    // null
+    return (
+      <button { ...entryProps }> 
+        { entry }
+      </button>
+    );
   }
 
-  // This function is overwritten by the inheriting class.
-  render(){
+  renderEntries(entries) {
+    if (!entries || entries.length == 0) return null;
 
-    return (<div></div>);
+    var dropdownTrayProps = {
+      className: 'search-dropdown-tray',
+      style: this.setDropdownStyle()
+    };
+
+    // Generate a list of  entries to display in the dropdown.
+    return <div { ...dropdownTrayProps }>
+      {
+        entries.map(
+          (entry, index) => this.renderEntry(entry, index, index == this.state.selectedIndex)
+        )
+      }
+    </div>
+  }
+
+  render() {
+    return (<div/>)
   }
 }

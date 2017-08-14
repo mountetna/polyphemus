@@ -25,31 +25,31 @@ export default class PermissionEdit extends React.Component {
     let { permissions, projects, users } = this.props
 
     var permFileSelector = {
-      'id': 'permission-file-selector',
-      'type': 'file',
-      'name': 'upload-file',
-      'onChange': this.fileSelected.bind(this)
+      id: 'permission-file-selector',
+      type: 'file',
+      name: 'upload-file',
+      onChange: this.fileSelected.bind(this)
     };
 
     var uploadPermBtnProps = {
-      'className': 'admin-add-btn',
-      'onClick': this.selectFile.bind(this)
+      className: 'admin-add-btn',
+      onClick: this.selectFile.bind(this)
     };
 
     var dwnldPermBtnProps = {
-      'className': 'admin-add-btn',
-      'onClick': this.props.downloadPermissions.bind(this)
+      className: 'admin-add-btn',
+      onClick: this.props.downloadPermissions.bind(this)
     };
 
     var addPermBtnProps = {
-      'className': 'admin-add-btn',
-      'onClick': this.props.addPermission.bind(this)
+      className: 'admin-add-btn',
+      onClick: this.props.addPermission.bind(this)
     };
 
     var callbacks = {
-      'removeUnsavedPermission': this.props.removeUnsavedPermission.bind(this),
-      'savePermission': this.props.savePermission.bind(this),
-      'removePermission': this.props.removePermission.bind(this)
+      removeUnsavedPermission: this.props.removeUnsavedPermission,
+      savePermission: this.props.savePermission,
+      removePermission: this.props.removePermission
     };
     
     return (
@@ -92,18 +92,22 @@ export default class PermissionEdit extends React.Component {
             </tr>
           </thead>
           <tbody id='permission-edit-body-group'>
-            { Object.values(permissions).map((permission, index)=>{
-              var permEntryProps = {
-                permission,
-                projects,
-                users,
-                callbacks,
-                key: permission.reactKey,
-                reactKey: permission.reactKey,
-              };
-
-              return <PermissionEntry { ...permEntryProps } />
-            }) }
+            {
+              Object.values(permissions).map(
+                (project) => Object.values(project).map(
+                  (permission, index) => {
+                    var permEntryProps = {
+                      permission,
+                      projects,
+                      users,
+                      ...callbacks,
+                      key: permission.key
+                    };
+                    return <PermissionEntry { ...permEntryProps } />
+                  }
+                )
+              ).reduce((a,b) => a.concat(b), [])
+            }
           </tbody>
         </table>
       </div>

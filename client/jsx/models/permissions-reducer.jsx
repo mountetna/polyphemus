@@ -4,7 +4,8 @@ const permission = (state={}, action) => {
       let { user_email, project_name, role } = action
       return {
         ...state,
-        user_email, project_name, role
+        user_email, project_name, role,
+        key: GENERATE_RAND_KEY()
       }
     default:
       return state

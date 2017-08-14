@@ -1,5 +1,6 @@
 import { postLoginEmailPassword, postCheckToken, postLogout } from '../api'
 import { postProjects, postPermissions, postUsers } from '../api'
+import { postUploadPermissions } from '../api'
 import { getToken, setToken, removeToken } from '../cookies'
 
 export const loggedIn = (user) => {
@@ -95,3 +96,11 @@ export const addUser = (user) => ({ type: 'ADD_USER', ...user })
 export const requestProjects = () => requestData(postProjects, addProject, 'projects')
 export const requestPermissions = () => requestData(postPermissions, addPermission, 'permissions')
 export const requestUsers = () => requestData(postUsers, addUser, 'users')
+
+export const savePermission = (permission) => savePermissions([permission])
+  
+export const savePermissions = (permissions) => (dispatch) => {
+  postUploadPermissions(getToken(), permissions).then(
+    (response) => permissions.forEach(permission=> dispatch(addPermission(permission)))
+  )
+}

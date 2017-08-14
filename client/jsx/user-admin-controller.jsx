@@ -202,18 +202,13 @@ class UserAdminController{
   }
 
   uploadPermission(permissions){
-
     if(COOKIES.hasItem(TOKEN_NAME)){
-
       //Serialize the request for POST
       var permissionItems = 'token='+ COOKIES.getItem(TOKEN_NAME);
       var encodedPerms = this.normalizePermission(permissions);
       permissionItems += '&permissions='+ encodedPerms;
-
       try{
-  
         AJAX({
-  
           'url': POLYPHEMUS_ADDR + '/upload-permissions',
           'method': 'POST',
           'sendType': 'serial',
@@ -264,19 +259,14 @@ class UserAdminController{
     this.adminDataCall('/get-permissions');
   }
 
-  normalizePermission(permissions){
-
-    for(var index in permissions){
-
+  normalizePermission(permissions) {
+    for (var index in permissions) {
       var permission = {};
-      for(var key in permissions[index]){
-
+      for (var key in permissions[index]) {
         permission[SNAKE_CASE_IT(key)] = permissions[index][key];
       }
-
       permissions[index] = permission;
     }
-
     return encodeURIComponent(JSON.stringify(permissions));
   }
 
@@ -325,9 +315,7 @@ class UserAdminController{
   }
 
   saveSinglePermission(permission){
-
     if(!this.checkSinglePermission(permission)) return;
-
     /*
      * By wrapping the permission in an array we can send it along as a bulk
      * upload...but this 'bulk upload' has only one entry.

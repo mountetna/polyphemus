@@ -3,232 +3,164 @@ import GenericAdminEntry from './generic-admin-entry';
 import ProjectSearchDropdown from './project-search-dropdown';
 import RoleDropdown from './role-dropdown';
 
-export default class PermissionEntry extends GenericAdminEntry{
-
-  componentDidMount(){
-
-    var permission = this['props']['permission'];
-    if(permission['projectId'] == null){
-
-      this.setState({
-
-        'editShow': true,
-        'editActive': true
-      });
+export default class PermissionEntry extends GenericAdminEntry {
+  constructor(props) {
+    super(props)
+    this.state = {
+      ...this.state,
+      revisedPermission: {}
     }
+    /* if (permission.projectId == null) {
+      this.setState({
+        editShow: true,
+        editActive: true
+      });
+    } */
   }
 
-  checkForPrimary(){
-
-    var perm = this['props']['permission'];
-    if(perm['role'] == 'administrator'){
-
-      if(perm['projectName'] == "administration"){
-
-        alert('You cannot edit the primary permission.');
-        return false;
-      }
+  checkForPrimary() {
+    var perm = this.props.permission;
+    if (perm.role == 'administrator'
+      && perm.projectName == "administration") {
+      alert('You cannot edit the primary permission.');
+      return false;
     }
-
     return true;
   }
 
-  activateEntryEdit(){
-
-    if(!this.checkForPrimary()) return;
-    this.setState({ 'editActive': true });
+  activateEntryEdit() {
+    if (!this.checkForPrimary()) return;
+    this.setState({
+      editActive: true,
+      revisedPermission: { ...this.props.permission }
+    });
   }
 
-  deactivateEntryEdit(){
-
-    var permission = this['props']['permission'];
-    if(permission['id'] == null) return;
-
-    this.setState({ 'editActive': false });
+  deactivateEntryEdit() {
+    this.setState({ editActive: false, revisedPermission: {} });
   }
 
-  resetEntry(){
-
-    if(!this.checkForPrimary()) return;
+  resetEntry() {
+    this.setState({ revisedPermission: { ... this.props.permission } });
     //this.forceUpdate();
   }
 
-  deleteEntry(){
-
-    if(!this.checkForPrimary()) return;
-    if(this['props']['permission']['id'] == undefined){
-
-      var reactKey = this['props']['permission']['reactKey'];
-      this['props']['callbacks'].removeUnsavedPermission(reactKey);
+  deleteEntry() {
+    let { permission } = this.props;
+    if (!this.checkForPrimary()) return;
+    if (this.props.permission.id == undefined) {
+      var reactKey = this.props.permission.reactKey;
+      this.props.removeUnsavedPermission(reactKey);
     }
-    else{
-
-      this['props']['callbacks'].removePermission(this['props']['permission']);
+    else {
+      this.props.removePermission(this.props.permission);
     }
   }
 
-  saveEntry(){
-
-    if(!this.checkForPrimary()) return;
-
+  saveEntry() {
+    if (!this.checkForPrimary()) return;
     /*
      * These are only simple validations to keep the UI tidy. There are more 
      * stringent validations higher up in the UI and definately on the server.
      */
-    var email = this['userEmailInput']['value'];
-    var userId = this.validateUser(email);
-    if(userId <= 0){
+    let { user_email, project_name, role } = this.state.revisedPermission
 
+    if (!this.validateUser(user_email)) {
       alert('Please select a valid user.');
       return;
     }
-    this['props']['permission']['userId'] = userId;
-    this['props']['permission']['userEmail'] = email;
 
-    var projectName = this['props']['permission']['projectName'];
-    var projectId = this.validateProject(projectName);
-    if(projectId <= 0){
-
+    if (!this.validateProject(project_name)) {
       alert('Please select a valid project.');
       return;
     }
 
-    var role = this['props']['permission']['role'];
-    if(!this.validateRole(role)){
-
+    if (!this.validateRole(role)) {
       alert('Please select a permission');
       return;
     }
 
-    this['props']['callbacks'].savePermission(this['props']['permission']);
+    let permission = { user_email, role, project_name }
+
+    this.props.savePermission(permission);
   }
 
-  projectSelected(project){
+  emailSelected(user_email) {
+    this.updatePermission('user_email', user_email)
+  }
 
-    var projectId = this.validateProject(project);
-    if(projectId <= 0){
-
-      alert('Please select a valid project.');
-      return;
+  updatePermission(name, value) {
+    let revisedPermission = {
+      ...this.state.revisedPermission,
+      [name]: value
     }
-
-    this['props']['permission']['projectName'] = project;
-    this['props']['permission']['projectId'] = projectId;
+    this.setState({ revisedPermission })
   }
 
-  roleSelected(role){
+  validateUser(email) {
+    if (!VALIDATE_EMAIL(email)) return null;
+    return Object.values(this.props.users).find(
+      (user) => user.email.toLowerCase() == email
+    )
+  }
 
-    if(!this.validateRole(role)){
+  validateProject(projectName) {
+    return this.props.projects.hasOwnProperty(projectName)
+  }
 
-      alert('Please select a permission');
-      return;
+  validateRole(role) {
+    return role
+  }
+
+  render() {
+    let { permission, projects } = this.props
+    let { revisedPermission, editActive } = this.state
+    let { user_email, project_name, role } = editActive ? revisedPermission : permission
+
+    if (user_email == 'john.engelhardt@bms.com') {
+      console.log(`Using ${user_email} ${project_name} ${role}`)
     }
-
-    this['props']['permission']['role'] = role;
-  }
-
-  validateUser(email){
-
-    if(email == '') return false;
-    if(!VALIDATE_EMAIL(email)) return false;
-
-    var userId = 0;
-    for(var a = 0; a < this['props']['users']['length']; ++a){
-
-      var userEmail = this['props']['users'][a]['email'].toLowerCase();
-      if(email == userEmail){
-
-        userId = this['props']['users'][a]['userId'];
-      }
-    }
-
-    return userId;
-  }
-
-  validateProject(projectName){
-
-    if(projectName == '') return false;
-
-    var projectId = 0;
-    for(var a = 0; a < this['props']['projects']['length']; ++a){
-
-      var prjNm = this['props']['projects'][a]['projectName']
-      if(projectName == prjNm){
-
-        projectId = this['props']['projects'][a]['projectId'];
-      }
-    }
-
-    return projectId;
-  }
-
-  validateRole(role){
-
-    if(role == '') return false;
-    return true;
-  }
-
-  render(){
 
     var adminEntryProps = {
-
-      'className': 'admin-edit-entry-group',
-      'onMouseEnter': this['showControlGroup'].bind(this),
-      'onMouseLeave': this['hideControlGroup'].bind(this)
+      className: 'admin-edit-entry-group',
+      onMouseEnter: this.showControlGroup.bind(this),
+      onMouseLeave: this.hideControlGroup.bind(this)
     };
 
     var userEmailEntryProps = {
-
-      'className': 'admin-entry-input',
-      'defaultValue': this['props']['permission']['userEmail'],
-      'ref': (input)=>{ this['userEmailInput'] = input }
+      className: editActive ? 'admin-entry-input' : 'admin-entry-input-inactive',
+      disabled: !editActive,
+      value: user_email,
+      onChange: (e) => this.updatePermission('user_email', e.target.value),
+      ref: (input)=>{ this.userEmailInput = input }
     };
 
-    if(!this['state']['editActive']){
-
-      userEmailEntryProps['className'] = 'admin-entry-input-inactive';
-      userEmailEntryProps['disabled'] = true;
-    }
-
     var projectDropdownProps = {
-
-      'permission': this['props']['permission'],
-      'projects': this['props']['projects'],
-      'editActive': this['state']['editActive'],
-      'callbacks': {
-
-        'projectSelected': this['projectSelected'].bind(this)
-      }
+      value: project_name,
+      entries: Object.values(projects).map(p=>p.project_name),
+      editActive,
+      onChange: this.updatePermission.bind(this,'project_name')
     };
 
     var roleDropdownProps = {
-
-      'permission': this['props']['permission'],
-      'editActive': this['state']['editActive'],
-      'callbacks': {
-
-        'roleSelected': this['roleSelected'].bind(this)
-      }
+      value: role,
+      entries: [ 'administrator', 'editor', 'viewer' ],
+      editActive,
+      onChange: this.updatePermission.bind(this,'role')
     };
 
     return (
-
       <tr { ...adminEntryProps }>
-
         <td>
-
           <input { ...userEmailEntryProps } />
         </td>
         <td>
-
           <ProjectSearchDropdown { ...projectDropdownProps } />
         </td>
         <td>
-
           <RoleDropdown { ...roleDropdownProps } />
         </td>
         <td>
-
           { this.renderEditControlGroup() }
         </td>
       </tr>

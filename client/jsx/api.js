@@ -71,14 +71,15 @@ const encodeBody = (terms) =>
     ).join('&')
 
 // login related functions
-export const postLoginEmailPassword = (email, password) => postForm('/login', encodeBody({ email, password }))
-export const postLogout = (token) => postForm('/logout', encodeBody({ token }))
-export const postCheckToken = (token) => postForm('/check', encodeBody({ token }))
+export const postLoginEmailPassword = (email, password) => postForm('/login', { email, password })
+export const postLogout = (token) => postForm('/logout', { token })
+export const postCheckToken = (token) => postForm('/check', { token })
 
 // project admin related functions
-export const postProjects = (token) => postForm('/projects', encodeBody({ token }))
-export const postPermissions = (token) => postForm('/permissions', encodeBody({ token }))
-export const postUsers = (token) => postForm('/users', encodeBody({ token }))
+export const postProjects = (token) => postForm('/projects', { token })
+export const postPermissions = (token) => postForm('/permissions', { token })
+export const postUsers = (token) => postForm('/users', { token })
+export const postUploadPermissions = (token, permissions) => postJSON('/upload-permissions', { token, permissions })
 
 export const postForm = (path, body) =>
   fetch(
@@ -87,6 +88,17 @@ export const postForm = (path, body) =>
       method: 'POST',
       credentials: 'same-origin',
       headers: headers('form'),
-      body
+      body: encodeBody(body)
+    }
+  ).then(checkResponse).then(json).catch(json_error)
+
+export const postJSON = (path, body) =>
+  fetch(
+    path,
+    {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: headers('json'),
+      body: JSON.stringify(body)
     }
   ).then(checkResponse).then(json).catch(json_error)
