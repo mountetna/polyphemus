@@ -13,13 +13,13 @@ module.exports = {
 
   'entry': {
 
-    'basic-view': './client/js/basic-view-controller.js',
-    'network-utils': './client/js/network-utils-controller.js',
-    'user-admin': './client/js/user-admin-controller.js'
+    'basic-view': './lib/client/js/basic-view-controller.js',
+    'network-utils': './lib/client/js/network-utils-controller.js',
+    'user-admin': './lib/client/js/user-admin-controller.js'
   },
   'output': {
 
-    'path': path.resolve(__dirname, './client/js'),
+    'path': path.resolve(__dirname, './lib/client/js'),
     'filename': '[name].bundle.js'
   }
 }

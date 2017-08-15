@@ -1,16 +1,10 @@
 import { postLoginEmailPassword, postCheckToken, postLogout } from '../api'
 import { postProjects, postPermissions, postUsers } from '../api'
 import { postUploadPermissions } from '../api'
-import { getToken, setToken, removeToken } from '../cookies'
+import { getToken, removeToken } from '../cookies'
 
 export const loggedIn = (user) => {
-  let { email, token } = user
-
-  // set the token so we can be sure they are real
-  setToken(token)
-
-  // email is the Janus id key - we'll identify
-  // logged-in users with this
+  let { email } = user
   return {
     type: 'LOGGED_IN',
     email

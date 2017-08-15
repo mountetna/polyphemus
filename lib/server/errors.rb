@@ -1,4 +1,4 @@
-class Polyphemus
+module Polyphemus
   class Error < StandardError
     attr_reader :level
 
