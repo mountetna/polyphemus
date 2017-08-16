@@ -1,15 +1,16 @@
 class Polyphemus
-  class Controller
-    def initialize(request, action)
-      @request = request
-      @params = request.POST()
-      @action = action
+  class Controller < Etna::Controller
+    def view name
+      txt = File.read(File.expand_path("../views/#{name}.html", __dir__))
+      @response['Content-Type'] = 'text/html'
+      @response.write(txt)
+      @response.finish
     end
 
     def check_param(*names)
       missing = names.reject { |name| @params.key?(name) }
       unless missing.empty?
-        raise Polyphemus::BadRequest, "No param: #{missing.join(" ")} for #{@params.keys.join(" ")}"
+        raise Etna::BadRequest, "No param: #{missing.join(" ")} for #{@params.keys.join(" ")}"
       end
     end
     alias_method :check_params, :check_param
@@ -18,7 +19,7 @@ class Polyphemus
       response = JSON.parse(janus_request('check-admin-token'))
       raise unless response['administrator']
     rescue
-      raise Polyphemus::BadRequest, "Not admin user" 
+      raise Etna::BadRequest, "Not admin user" 
     end
 
     def janus_request(endpoint, data={})
@@ -42,11 +43,11 @@ class Polyphemus
         if response_code == 200
           return response.body
         else
-          raise Polyphemus::ServerError, "Janus Server error: #{response.body}"
+          raise Etna::ServerError, "Janus Server error: #{response.body}"
         end
       rescue Exception => e
         raise if e.is_a?(ServerError)
-        raise Polyphemus::ServerError, "Connection error"
+        raise Etna::ServerError, "Connection error"
       end
     end
   end

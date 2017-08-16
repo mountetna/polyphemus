@@ -1,30 +1,18 @@
 # This should only server a single user status page.
-class ClientController
-
-  def initialize(request, action)
-
-    @request = request
-    @params = request.POST()
-    @action = action
+class ClientController < Polyphemus::Controller
+  def browse
+    view :basic_view
   end
 
-  def run()
-    return send(@action)
+  def user_admin
+    view :user_admin
   end
 
-  def browse()
-    return File.read('./server/views/basic_view.html')
+  def network_utils
+    view :network_utils
   end
 
-  def user_admin()
-    return File.read('./server/views/user_admin.html')
-  end
-
-  def network_utils()
-    return File.read('./server/views/network_utils.html')
-  end
-
-  def logged_out()
-    return File.read('./server/views/logged_out.html')
+  def logged_out
+    view :logged_out
   end
 end

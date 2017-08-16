@@ -1,5 +1,5 @@
 # This class handles the http request and routing
-module Polyphemus
+class Polyphemus
   class Server < Etna::Server
     # Page view end points
     get '/', 'client#browse'
