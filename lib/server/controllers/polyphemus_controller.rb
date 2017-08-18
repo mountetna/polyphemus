@@ -24,7 +24,7 @@ class Polyphemus
 
     def janus_request(endpoint, data={})
       data = {
-        token: @params['token'],
+        token: @params[:token],
         app_key: Secrets::APP_KEY 
       }.merge(data).reject { |key,value| value.nil? }
 
@@ -46,7 +46,7 @@ class Polyphemus
           raise Etna::ServerError, "Janus Server error: #{response.body}"
         end
       rescue Exception => e
-        raise if e.is_a?(ServerError)
+        raise if e.is_a?(Etna::ServerError)
         raise Etna::ServerError, "Connection error"
       end
     end
